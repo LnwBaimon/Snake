@@ -28,6 +28,9 @@ apple = pygame.transform.scale(apple, (10, 10))
 bomb_image = pygame.image.load("Graphic/TNT.png")
 bomb_image = pygame.transform.scale(bomb_image, (10,10))
 
+heart_image = pygame.image.load("Graphic/heart.png") 
+heart_image = pygame.transform.scale(heart_image, (10, 10))  
+
 apple_sound = pygame.mixer.Sound("Graphic/apple_sound.mp3")
 
 click_sound = pygame.mixer.Sound("Graphic/click_sound.mp3")
@@ -261,6 +264,10 @@ def game():
                 bombs.remove(bomb)  # ลบระเบิดหลังจากชน
                 bomb_penalty = random.randint(2, 5)
                 score -= bomb_penalty
+                
+        elif current_level >= 2:  # เฉพาะใน Level 2
+            heart_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (height // 10)) * 10]
+            hearts.append(heart_pos)
             
 
         
@@ -270,6 +277,12 @@ def game():
             pygame.draw.rect(screen, blue, pygame.Rect(pos[0], pos[1], 10, 10))
 
         screen.blit(apple, (food_pos[0], food_pos[1])) # แอปเปิ้ล
+
+        for heart in hearts:
+            screen.blit(heart_image, (heart[0], heart[1]))
+            
+        for bomb in bombs:
+            screen.blit(bomb_image, (bomb[0], bomb[1]))
 
         # ตรวจสอบการชนขอบจอ
         if snake_pos[0] < 0 or snake_pos[0] >= width or snake_pos[1] < 0 or snake_pos[1] >= hight:
@@ -290,9 +303,6 @@ def game():
                 return  
             else:
                 return
-
-        for bomb in bombs:
-            screen.blit(bomb_image, (bomb[0], bomb[1]))
 
         # แสดงคะแนนและ LV
         show_score()
