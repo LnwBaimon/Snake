@@ -269,11 +269,6 @@ def game():
                 bomb_penalty = random.randint(2, 5)
                 score -= bomb_penalty
                 
-        elif current_level >= 2:  # เฉพาะใน Level 2
-            heart_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (height // 10)) * 10]
-            hearts.append(heart_pos)
-            
-
         
         screen.fill(black)
 
