@@ -268,8 +268,7 @@ def game():
                 bombs.remove(bomb)  # ลบระเบิดหลังจากชน
                 bomb_penalty = random.randint(2, 5)
                 score -= bomb_penalty
-                
-        
+                  
         screen.fill(black)
 
         for pos in snake_body: # ตัวงู
