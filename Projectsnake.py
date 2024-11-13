@@ -29,7 +29,10 @@ bomb_image = pygame.image.load("Graphic/TNT.png")
 bomb_image = pygame.transform.scale(bomb_image, (10,10))
 
 heart_image = pygame.image.load("Graphic/heart.png") 
-heart_image = pygame.transform.scale(heart_image, (10, 10))  
+heart_image = pygame.transform.scale(heart_image, (10, 10))
+
+lucky_box_image = pygame.image.load("Graphic/random.png")  # Lucky Box image
+lucky_box_image = pygame.transform.scale(lucky_box_image, (10, 10)) 
 
 apple_sound = pygame.mixer.Sound("Graphic/apple_sound.mp3")
 
@@ -153,7 +156,7 @@ def over_score():
                     waiting = False
                     return False  # ส่งคืนค่าเพื่อกลับไปที่เมนู
                 
-level_thresholds = [3, 15, 20, 25]  
+level_thresholds = [2, 2, 2, 2]  
 current_level = 1
 
 def game():
@@ -170,16 +173,23 @@ def game():
     snake_body = [[100, 50], [90, 50], [80, 50], [70, 50]]
     snake_speed = 10
     bombs = []
-    hearts = []  # รายการหัวใจ
     bomb_pos = None
+    lucky_box = None
     bomb_spawn_time = 0
     bomb_spawn_interval = 10 
 
     food_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
     food_spawn = True
 
+    hearts = []  # รายการหัวใจ
+
     direction = "RIGHT"
     change_to = direction
+
+    # AI Snake ใน LV 3 
+    ai_snake_pos1 = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
+    ai_snake_body1 = [[ai_snake_pos1[0], ai_snake_pos1[1]], [ai_snake_pos1[0] - 10, ai_snake_pos1[1]], [ai_snake_pos1[0] - 20, ai_snake_pos1[1]], [ai_snake_pos1[0] - 30, ai_snake_pos1[1]]]
+    ai_direction = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
 
     pygame.mixer.music.play(-1, 0.0) 
 
@@ -253,7 +263,7 @@ def game():
             score = 0
             snake_body = [[100, 50], [90, 50], [80, 50], [70, 50]] 
             snake_body.append([snake_pos[0] + 10, snake_pos[1]])
-
+        # Lv 2
         if current_level == 2:
             current_time = time.time()
             if current_time - bomb_spawn_time >= bomb_spawn_interval:
@@ -268,19 +278,92 @@ def game():
                 bombs.remove(bomb)  # ลบระเบิดหลังจากชน
                 bomb_penalty = random.randint(2, 5)
                 score -= bomb_penalty
-                  
+        # Lv 3
+        if current_level == 3:
+            current_time = time.time()
+
+            if current_time - bomb_spawn_time >= bomb_spawn_interval:
+                bomb_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
+            
+            if not hearts:
+                heart_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
+                hearts.append(heart_pos)
+            
+            if lucky_box is None:
+                lucky_box_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
+                lucky_box = lucky_box_pos
+
+            if ai_direction == "UP":
+                ai_snake_pos1[1] -= 10
+            elif ai_direction == "DOWN":
+                ai_snake_pos1[1] += 10
+            elif ai_direction == "LEFT":
+                ai_snake_pos1[0] -= 10
+            elif ai_direction == "RIGHT":
+                ai_snake_pos1[0] += 10
+
+            # ตรวจสอบการชนขอบ
+            if ai_snake_pos1[0] < 0 or ai_snake_pos1[0] >= width or ai_snake_pos1[1] < 0 or ai_snake_pos1[1] >= hight:
+                ai_direction = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])  # สุ่มทิศทางใหม่เมื่อชนขอบ
+
+            # เพิ่มส่วนของ AI Snake
+            ai_snake_body1.insert(0, list(ai_snake_pos1))
+            ai_snake_body1.pop()
+
+            # เปลี่ยนทิศทาง AI Snake หลังจากเคลื่อนที่
+            if random.random() < 0.05:  # โอกาสในการเปลี่ยนทิศทาง 5%
+                ai_direction = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
+
+            # ตรวจสอบการชนระหว่างผู้เล่นกับงู AI
+            if snake_pos in ai_snake_body1:
+                death_sound.play()
+                over_score()
+                return
+            # การตรวจสอบการชนระหว่างงู AI กับงูผู้เล่น
+            if snake_pos in ai_snake_body1:
+                death_sound.play()  # เล่นเสียงเมื่อเกิดการชน
+                pygame.mixer.music.stop()  # หยุดเพลงพื้นหลัง
+                over_score()  # แสดงหน้าจอเกมโอเวอร์
+                return  # จบเกม
+
+        # Event เมื่อเก็บ Lucky block
+        if lucky_box and snake_pos == lucky_box:
+            lucky_box = None  
+            lucky_item = random.choice(["score", "level_up", "speed_up", "restart"])
+
+            if lucky_item == "score":
+                bonus = random.randint(5, 7)
+                score += bonus
+            elif lucky_item == "level_up":
+                if current_level < len(level_thresholds):
+                    current_level += 1
+            elif lucky_item == "speed_up":
+                snake_speed += 20
+            elif lucky_item == "restart":
+                score = 0
+                current_level = 1
+                snake_speed = 10
+                snake_body = [[100, 50], [90, 50], [80, 50], [70, 50]]
+
         screen.fill(black)
 
         for pos in snake_body: # ตัวงู
             pygame.draw.rect(screen, blue, pygame.Rect(pos[0], pos[1], 10, 10))
 
         screen.blit(apple, (food_pos[0], food_pos[1])) # แอปเปิ้ล
-
-        for heart in hearts:
-            screen.blit(heart_image, (heart[0], heart[1]))
             
         for bomb in bombs:
             screen.blit(bomb_image, (bomb[0], bomb[1]))
+
+        for heart in hearts:
+            screen.blit(heart_image, (heart[0], heart[1]))
+
+        if lucky_box:  # Draw lucky box
+            screen.blit(lucky_box_image, (lucky_box[0], lucky_box[1]))
+
+        # วาดงู AI
+            for segment in ai_snake_body1:
+                pygame.draw.rect(screen, red, pygame.Rect(segment[0], segment[1], 10, 10))
 
         # ตรวจสอบการชนขอบจอ
         if snake_pos[0] < 0 or snake_pos[0] >= width or snake_pos[1] < 0 or snake_pos[1] >= hight:
@@ -301,15 +384,26 @@ def game():
                 return  
             else:
                 return
-        for heart in hearts:
-            if snake_pos == heart:
-                hearts.remove(heart)
-                heart_bonus = random.randint(2, 5)  # เพิ่มคะแนนจากหัวใจ
-                score += heart_bonus
-                # สุ่มตำแหน่งหัวใจใหม่
-                heart_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
-                hearts.append(heart_pos)
+        
+        # ตรวจสอบขอบจอของ AI Snake
+        if ai_snake_pos1[0] < 0:
+            ai_snake_pos1[0] = width - 10  # กลับมาที่ขอบขวา
+        elif ai_snake_pos1[0] >= width:
+            ai_snake_pos1[0] = 0  # กลับมาที่ขอบซ้าย
 
+        if ai_snake_pos1[1] < 0:
+            ai_snake_pos1[1] = hight - 10  # กลับมาที่ขอบล่าง
+        elif ai_snake_pos1[1] >= hight:
+            ai_snake_pos1[1] = 0  # กลับมาที่ขอบบน
+        
+        for heart in hearts:
+                if snake_pos == heart:
+                    hearts.remove(heart)
+                    heart_bonus = random.randint(2, 5)  # เพิ่มคะแนนจากหัวใจ
+                    score += heart_bonus
+                    # สุ่มตำแหน่งหัวใจใหม่
+                    heart_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
+                    hearts.append(heart_pos)
 
         # แสดงคะแนนและ LV
         show_score()
