@@ -170,6 +170,7 @@ def game():
     snake_body = [[100, 50], [90, 50], [80, 50], [70, 50]]
     snake_speed = 10
     bombs = []
+    hearts = []  # รายการหัวใจ
     bomb_pos = None
     bomb_spawn_time = 0
     bomb_spawn_interval = 10 
@@ -259,6 +260,9 @@ def game():
                 bomb_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
                 bombs.append(bomb_pos)  # เพิ่มระเบิดใหม่ลงในรายการ
                 bomb_spawn_time = current_time
+            if not hearts:
+                heart_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
+                hearts.append(heart_pos)
         for bomb in bombs:
             if snake_pos == bomb:
                 bombs.remove(bomb)  # ลบระเบิดหลังจากชน
@@ -303,6 +307,15 @@ def game():
                 return  
             else:
                 return
+        for heart in hearts:
+            if snake_pos == heart:
+                hearts.remove(heart)
+                heart_bonus = random.randint(2, 5)  # เพิ่มคะแนนจากหัวใจ
+                score += heart_bonus
+                # สุ่มตำแหน่งหัวใจใหม่
+                heart_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
+                hearts.append(heart_pos)
+
 
         # แสดงคะแนนและ LV
         show_score()
