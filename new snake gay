@@ -383,6 +383,7 @@ def game():
                     ai_direction = "DOWN"
                 else:
                     ai_direction = "UP"
+            # เปลี่ยนแปลงตำแหน่งของงูในทิศทางต่างๆ ตามตัวแปร ai_direction ที่เก็บทิศทางที่งูกำลังเคลื่อนที่ไป
             if ai_direction == "UP":
                 ai_snake_pos1[1] -= 5
             elif ai_direction == "DOWN":
@@ -445,22 +446,22 @@ def game():
                 current_level = 1
                 snake_speed = 10
                 snake_body = [[100, 50], [90, 50], [80, 50], [70, 50]]
-
+        #Lv 5
         if current_level == 5:
             bomb_pos = []
             hearts = []  
             lucky_box = None
-
+        # เปลี่ยนแปลงตำแหน่งของงูในทิศทางต่างๆ ตามตัวแปร ai_direction ที่เก็บทิศทางที่งูกำลังเคลื่อนที่ไป
             if ai_direction == "UP":
-                ai_snake_pos1[1] -= 10
+                ai_snake_pos1[1] -= 3
             elif ai_direction == "DOWN":
-                ai_snake_pos1[1] += 10
+                ai_snake_pos1[1] += 3
             elif ai_direction == "LEFT":
-                ai_snake_pos1[0] -= 10
+                ai_snake_pos1[0] -= 3
             elif ai_direction == "RIGHT":
-                ai_snake_pos1[0] += 10
+                ai_snake_pos1[0] += 3
 
-                        # ตรวจสอบการชนขอบ
+            # ตรวจสอบการชนขอบ
             if ai_snake_pos1[0] < 0 or ai_snake_pos1[0] >= width or ai_snake_pos1[1] < 0 or ai_snake_pos1[1] >= hight:
                 ai_direction = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])  # สุ่มทิศทางใหม่เมื่อชนขอบ
 
