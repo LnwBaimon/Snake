@@ -400,6 +400,12 @@ def game():
             ai_snake_body1.insert(0, list(ai_snake_pos1))
             ai_snake_body1.pop()
 
+            # เพิ่มความยาวให้มากขึ้นทุกครั้ง
+            ai_snake_body1.insert(0, list(ai_snake_pos1))  # เพิ่มส่วนใหม่
+            for _ in range(3):  # เพิ่มจำนวนส่วนเพื่อให้ยาวขึ้น
+                ai_snake_body1.insert(0, list(ai_snake_pos1))  # เพิ่มส่วนใหม่            
+                ai_snake_body1.pop()  # ลบส่วนท้ายสุดออก
+
             # เปลี่ยนทิศทาง AI Snake หลังจากเคลื่อนที่
             if random.random() < 0.05:  # โอกาสในการเปลี่ยนทิศทาง 5%
                 ai_direction = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
