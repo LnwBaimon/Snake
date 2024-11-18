@@ -384,13 +384,13 @@ def game():
                 else:
                     ai_direction = "UP"
             if ai_direction == "UP":
-                ai_snake_pos1[1] -= 10
+                ai_snake_pos1[1] -= 5
             elif ai_direction == "DOWN":
-                ai_snake_pos1[1] += 10
+                ai_snake_pos1[1] += 5
             elif ai_direction == "LEFT":
-                ai_snake_pos1[0] -= 10
+                ai_snake_pos1[0] -= 5
             elif ai_direction == "RIGHT":
-                ai_snake_pos1[0] += 10
+                ai_snake_pos1[0] += 5
 
             # ตรวจสอบการชนขอบ
             if ai_snake_pos1[0] < 0 or ai_snake_pos1[0] >= width or ai_snake_pos1[1] < 0 or ai_snake_pos1[1] >= hight:
