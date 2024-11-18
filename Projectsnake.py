@@ -22,6 +22,9 @@ bigfont = pygame.font.Font("Graphic/PixelFont.ttf", 32)
 bg = pygame.image.load("Graphic/Bggame.png")
 bg = pygame.transform.scale(bg, (800,600))
 
+bg_game = pygame.image.load("Graphic/grass.png")
+bg_game = pygame.transform.scale(bg_game, (800, 600))
+
 apple = pygame.image.load("Graphic/apple.png")
 apple = pygame.transform.scale(apple, (10, 10))
 
@@ -350,7 +353,6 @@ def game():
 
         if current_level == 4:
             current_time = time.time()
-            ai_snake_speed = 20
 
             if current_time - bomb_spawn_time >= bomb_spawn_interval:
                 bomb_pos = [random.randrange(1, (width // 10)) * 10, random.randrange(1, (hight // 10)) * 10]
@@ -482,10 +484,10 @@ def game():
 
         screen.blit(apple, (food_pos[0], food_pos[1]))
 
-        screen.fill(black)
+        screen.blit(bg_game , (0, 0))
 
         for pos in snake_body: # ตัวงู
-            pygame.draw.rect(screen, blue, pygame.Rect(pos[0], pos[1], 10, 10))
+            pygame.draw.rect(screen, black, pygame.Rect(pos[0], pos[1], 10, 10))
 
         screen.blit(apple, (food_pos[0], food_pos[1])) # แอปเปิ้ล
             
